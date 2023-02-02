@@ -13,7 +13,7 @@ feature 'creating and editing scheduled messages', active_job: true do
 
     step 'when user goes to messages page' do
       visit reporting_relationship_path(rrone)
-      expect(page).to have_content reminder.body
+      expect(page).to have_ignoring_newlines reminder.body
     end
   end
 end

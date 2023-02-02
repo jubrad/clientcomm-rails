@@ -10,8 +10,8 @@ class SMSService
   class NumberNotFound < StandardError; end
 
   def initialize
-    sid = ENV['TWILIO_ACCOUNT_SID']
-    token = ENV['TWILIO_AUTH_TOKEN']
+    token = Rails.configuration.x.twilio.auth_token
+    sid = Rails.configuration.x.twilio.account_sid
     @client = Twilio::REST::Client.new sid, token
   end
 

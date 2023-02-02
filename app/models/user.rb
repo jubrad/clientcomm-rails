@@ -1,8 +1,8 @@
 class User < ApplicationRecord
-  has_many :reporting_relationships, dependent: :nullify
+  has_many :reporting_relationships, dependent: :destroy
   has_many :clients, through: :reporting_relationships
   has_many :messages, through: :reporting_relationships
-  belongs_to :department
+  belongs_to :department, optional: :true
 
   scope :active, -> { where(active: true) }
 
@@ -59,7 +59,7 @@ class User < ApplicationRecord
     reporting_relationships
       .includes(:client, :client_status)
       .active
-      .order('has_unread_messages DESC, COALESCE(reporting_relationships.last_contacted_at, reporting_relationships.created_at) DESC')
+      .order(Arel.sql('has_unread_messages DESC, COALESCE(reporting_relationships.last_contacted_at, reporting_relationships.created_at) DESC'))
   end
 
   def active_reporting_relationships_with_selection(selected_reporting_relationships: [])

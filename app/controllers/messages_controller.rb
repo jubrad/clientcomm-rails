@@ -56,8 +56,8 @@ class MessagesController < ApplicationController
     message.save!
 
     message.send_message
-
-    track_create(message: message, send_at: message_params[:send_at], has_attachment: attachments.any?)
+    flash[:notice] = 'Your message has been scheduled' if message_params[:send_at]
+    analytics_message_track(message: message, send_at: message_params[:send_at], has_attachment: attachments.any?)
 
     respond_to do |format|
       format.html { redirect_to reporting_relationship_path(current_user.reporting_relationships.find_by(client: client)) }
@@ -139,34 +139,4 @@ class MessagesController < ApplicationController
       .order(send_at: :asc)
   end
 
-  def track_create(message:, send_at:, has_attachment:)
-    if send_at.present?
-      flash[:notice] = 'Your message has been scheduled'
-      analytics_track(
-        label: 'message_scheduled',
-        data: message.analytics_tracker_data.merge(mass_message: false)
-      )
-    else
-      tracking_data = { mass_message: false }
-      tracking_data[:positive_template] = params[:positive_template_type].present?
-      tracking_data[:positive_template_type] = params[:positive_template_type]
-      tracking_data[:attachment] = has_attachment
-
-      tracking_data[:welcome_template] = false
-      if params[:welcome_message_original].present?
-        distance = FuzzyMatcher.get_distance(string_a: params[:welcome_message_original], string_b: message.body)
-        tracking_data[:welcome_template] = true if distance >= 0.85
-
-        analytics_track(
-          label: 'welcome_prompt_send',
-          data: message.analytics_tracker_data.merge(tracking_data)
-        )
-      end
-
-      analytics_track(
-        label: 'message_send',
-        data: message.analytics_tracker_data.merge(tracking_data)
-      )
-    end
-  end
 end

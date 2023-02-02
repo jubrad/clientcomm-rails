@@ -30,16 +30,16 @@ feature 'user deactivates client', :js do
     expect(page).to have_current_path(edit_client_path(client))
     expect(page).to have_content 'Deactivate client'
 
-    expect(page).to_not have_content question_text
+    expect(page).to_not have_ignoring_newlines question_text
 
     click_on "Deactivate #{client.first_name} #{client.last_name}"
     expect(page).to have_current_path(edit_client_path(client))
 
-    expect(page).to have_content question_text
-    expect(page).to have_content response_text1
-    expect(page).to have_content response_text2
-    expect(page).to have_content response_text3
-    expect(page).to_not have_content response_text4
+    expect(page).to have_ignoring_newlines question_text
+    expect(page).to have_ignoring_newlines response_text1
+    expect(page).to have_ignoring_newlines response_text2
+    expect(page).to have_ignoring_newlines response_text3
+    expect(page).to_not have_ignoring_newlines response_text4
 
     expect(page).to have_button("Deactivate #{client.first_name} #{client.last_name}", disabled: true)
 

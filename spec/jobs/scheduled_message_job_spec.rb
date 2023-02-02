@@ -118,7 +118,7 @@ describe ScheduledMessageJob, active_job: true, type: :job do
   end
 
   context 'retry on Twilio::REST::RequestError' do
-    let(:error) { Twilio::REST::RestError.new('Not Found', 20404, 404) }
+    let(:error) { twilio_rest_error(20404,"Not Found") }
 
     it 'retries' do
       expect(SMSService.instance).to receive(:send_message).exactly(4).times.and_raise(error)
@@ -129,7 +129,7 @@ describe ScheduledMessageJob, active_job: true, type: :job do
   end
 
   context 'the number is blacklisted' do
-    let(:error) { Twilio::REST::RestError.new('Blacklisted', 21610, 403) }
+    let(:error) { twilio_rest_error(21610, "Blacklisted") }
 
     before do
       expect(SMSService.instance).to receive(:send_message).and_raise(error)

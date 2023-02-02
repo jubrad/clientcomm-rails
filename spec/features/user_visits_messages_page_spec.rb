@@ -69,7 +69,7 @@ feature 'User clicks on client in list', :js do
         end
 
         it 'sorts messages by send_at' do
-          expect(page).to have_content(/#{messagetwo.body}.*#{messageone.body}/)
+          expect(page).to have_ignoring_newlines /#{messagetwo.body}.*#{messageone.body}/
         end
       end
     end
@@ -95,7 +95,7 @@ feature 'User sees client notes on messages page', :js do
     it 'hides notes on mobile' do
       login_as(myuser, scope: :user)
       visit reporting_relationship_path(rr)
-      expect(page).to_not have_content truncated_notes
+      expect(page).to_not have_ignoring_newlines truncated_notes
     end
   end
 
@@ -107,7 +107,7 @@ feature 'User sees client notes on messages page', :js do
     it 'shows notes on desktop' do
       login_as(myuser, scope: :user)
       visit reporting_relationship_path(rr)
-      expect(page).to have_content truncated_notes
+      expect(page).to have_ignoring_newlines truncated_notes
     end
   end
 
@@ -130,19 +130,19 @@ feature 'User sees client notes on messages page', :js do
     it 'shows full note when show more button is clicked' do
       expect(page).to have_selector('#truncated_note', visible: true)
       expect(page).to have_selector('#full_note', visible: false)
-      expect(page).to have_content truncated_notes
+      expect(page).to have_ignoring_newlines truncated_notes
 
       click_link 'More'
 
       expect(page).to have_selector('#truncated_note', visible: false)
       expect(page).to have_selector('#full_note', visible: true)
-      expect(page).to have_content notes
+      expect(page).to have_ignoring_newlines notes
 
       click_link 'Less'
 
       expect(page).to have_selector('#truncated_note', visible: true)
       expect(page).to have_selector('#full_note', visible: false)
-      expect(page).to have_content truncated_notes
+      expect(page).to have_ignoring_newlines truncated_notes
     end
   end
 end

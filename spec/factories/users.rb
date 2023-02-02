@@ -12,5 +12,12 @@ FactoryBot.define do
     department do
       create :department, phone_number: dept_phone_number
     end
+
+    factory :admin_user do
+      admin { true }
+    end
+
+
   end
+
 end

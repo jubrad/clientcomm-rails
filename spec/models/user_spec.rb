@@ -1,7 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  let(:rr) { create :reporting_relationship, active: true, has_unread_messages: false }
+  let(:rr) do
+     create :reporting_relationship, active: true, has_unread_messages: false 
+  end
   let!(:user) { rr.user }
   let!(:client) { rr.client }
   let!(:message) { create :text_message, reporting_relationship: rr, read: true }

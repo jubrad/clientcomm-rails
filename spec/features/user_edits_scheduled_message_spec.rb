@@ -48,7 +48,7 @@ feature 'creating and editing scheduled messages', active_job: true do
       click_on '1 message scheduled'
       expect(page).to have_current_path(reporting_relationship_scheduled_messages_index_path(rrone))
       expect(page).to have_content 'Manage scheduled messages'
-      expect(page).to have_content truncated_message_body
+      expect(page).to have_ignoring_newlines truncated_message_body
     end
 
     step 'when user clicks on edit message' do
@@ -82,7 +82,7 @@ feature 'creating and editing scheduled messages', active_job: true do
       click_on '1 message scheduled'
       expect(page).to have_current_path(reporting_relationship_scheduled_messages_index_path(rrone))
       expect(page).to have_content 'Manage scheduled messages'
-      expect(page).to have_content new_message_body
+      expect(page).to have_ignoring_newlines new_message_body
 
       click_on 'Edit'
       expect(page).to have_current_path(edit_message_path(messageone_id))
@@ -101,7 +101,7 @@ feature 'creating and editing scheduled messages', active_job: true do
       click_on '1 message scheduled'
       expect(page).to have_current_path(reporting_relationship_scheduled_messages_index_path(rrone))
       expect(page).to have_content 'Manage scheduled messages'
-      expect(page).to have_content new_message_body
+      expect(page).to have_ignoring_newlines new_message_body
     end
 
     step 'when the user clicks the button to dismiss the modal' do
@@ -114,7 +114,7 @@ feature 'creating and editing scheduled messages', active_job: true do
       click_on '1 message scheduled'
       expect(page).to have_current_path(reporting_relationship_scheduled_messages_index_path(rrone))
       expect(page).to have_content 'Manage scheduled messages'
-      expect(page).to have_content new_message_body
+      expect(page).to have_ignoring_newlines new_message_body
 
       click_on 'Edit'
       expect(page).to have_current_path(edit_message_path(messageone_id))

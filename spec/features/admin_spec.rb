@@ -121,7 +121,7 @@ feature 'Admin Panel' do
         click_on 'Update User'
         expect(page.current_path).to eq(admin_user_path(user_active_client))
         error_message = I18n.t('activerecord.errors.models.user.attributes.reporting_relationships.invalid')
-        expect(page).to have_content(error_message)
+        expect(page).to have_ignoring_newlines(error_message)
       end
 
       step 'clears unread messages belonging to a user' do

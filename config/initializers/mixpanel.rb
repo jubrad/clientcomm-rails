@@ -1,4 +1,4 @@
-mixpanel_token = ENV['MIXPANEL_TOKEN']
+mixpanel_token = ENV['MIXPANEL_TOKEN'] || "XXXXX"
 return if mixpanel_token.nil?
 
 MIXPANEL_TRACKER = Mixpanel::Tracker.new(mixpanel_token)

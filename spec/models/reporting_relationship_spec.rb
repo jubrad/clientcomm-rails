@@ -23,7 +23,7 @@ RSpec.describe ReportingRelationship, type: :model do
           )
 
           expect(rr).to_not be_valid
-          expect(rr.errors.added?(:client, :taken)).to eq true
+          expect(rr.errors.added?(:client, 'has already been taken')).to eq true
         end
       end
 

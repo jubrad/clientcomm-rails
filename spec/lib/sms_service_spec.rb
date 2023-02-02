@@ -4,8 +4,8 @@ require 'cgi'
 describe SMSService do
   let(:twilio_client) { FakeTwilioClient.new sid, token }
   let(:message_sid) { Faker::Crypto.sha1 }
-  let(:sid) { 'some_sid' }
-  let(:token) { 'some_token' }
+  let(:sid) { Rails.configuration.x.twilio.account_sid }
+  let(:token) { Rails.configuration.x.twilio.auth_token }
 
   let(:sms_service) { described_class.clone.instance }
 
@@ -157,7 +157,7 @@ describe SMSService do
       let(:error_message) { 'Unable to update record: Cannot delete message because delivery has not been completed.' }
 
       it 'returns false' do
-        expect(message).to receive(:update).with(body: '').and_raise(Twilio::REST::RestError.new(error_message, 20009, 409))
+        expect(message).to receive(:update).with(body: '').and_raise(twilio_rest_error(20009, error_message))
 
         expect(subject).to eq false
       end
@@ -167,7 +167,7 @@ describe SMSService do
       let(:error_message) { 'Unable to fetch record: The requested resource was not found' }
 
       before do
-        expect_any_instance_of(FakeTwilioClient).to receive(:fetch).and_raise(Twilio::REST::RestError.new(error_message, 20404, 409))
+        expect_any_instance_of(FakeTwilioClient).to receive(:fetch).and_raise(twilio_rest_error(20404, error_message))
       end
 
       it 'returns false' do
@@ -176,7 +176,7 @@ describe SMSService do
     end
 
     context 'an unknown twilio error occurs' do
-      let(:error) { Twilio::REST::RestError.new('some other error', 20010, 500) }
+      let(:error) { twilio_rest_error(20010, 'some other error')}
 
       it 'reraises the error' do
         expect(message).to receive(:update).with(body: '').and_raise(error)
@@ -202,7 +202,7 @@ describe SMSService do
     end
 
     context 'the number does not exist' do
-      let(:error) { Twilio::REST::RestError.new('Unable to fetch record', 20404, 404) }
+      let(:error) { twilio_rest_error(20404, 'Unable to fetch record') }
       it 'throws a number not found error' do
         expect(twilio_client).to receive(:phone_numbers).with(ERB::Util.url_encode(phone_number)).and_return(phone_numbers)
         expect(phone_numbers).to receive(:fetch).and_raise(error)
@@ -211,7 +211,7 @@ describe SMSService do
       end
 
       context 'an unknown twilio error occurs' do
-        let(:error) { Twilio::REST::RestError.new('some other error', 20010, 500) }
+        let(:error) {twilio_rest_error(20010, "some other error") }
 
         it 'reraises the error' do
           expect(twilio_client).to receive(:phone_numbers).with(ERB::Util.url_encode(phone_number)).and_return(phone_numbers)

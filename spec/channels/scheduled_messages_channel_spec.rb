@@ -12,7 +12,6 @@ RSpec.describe ScheduledMessagesChannel, type: :channel do
 
   it 'subscribes' do
     subject
-
     expect(subscription).to be_confirmed
   end
 

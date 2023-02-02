@@ -102,7 +102,7 @@ describe CourtRemindersImporter do
       let!(:existing_reminder) { create :court_reminder, reporting_relationship: rr1, send_at: Time.zone.now + 2.days, court_date_csv: csv }
 
       it 'does not save any messages' do
-        expect { subject }.to raise_error(ArgumentError, 'invalid strptime format - `%m/%d/%Y %H:%M %z\'')
+        expect { subject }.to raise_error(ArgumentError, /invalid date or strptime format.*/)
 
         expect(rr1.messages.scheduled).to contain_exactly(existing_reminder)
         expect(rr2.messages.scheduled).to be_empty

@@ -69,7 +69,7 @@ RSpec.describe Message, type: :model do
 
   describe 'analytics_tracker_data' do
     let(:body_length) { 10 }
-    let(:body) { Faker::Lorem.characters(body_length) }
+    let(:body) { Faker::Lorem.characters[0...body_length] }
     let(:send_at) { Time.zone.local(2010, 1, 1, 1, 1, 1) }
     let(:created_at) { Time.zone.local(2009, 2, 1, 1, 1, 1) }
     let!(:user) { create :user }

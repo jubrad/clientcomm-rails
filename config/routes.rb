@@ -16,13 +16,10 @@ Rails.application.routes.draw do
   # CLIENTS and MESSAGES
   devise_scope :user do
     authenticated :user do
-      root to: 'clients#index'
-    end
-
-    unauthenticated do
-      root to: 'users/sessions#new'
+      root to: 'clients#index', as: :authenticated_user
     end
   end
+  root to: 'users/sessions#new'
 
   resources :tracking_events, only: [:create]
 

@@ -32,6 +32,7 @@ staging:
 
 test:
   <<: *default
+  deploy_fqdn: test.example.com
   client_categories:
     no_cat:
       icon: 'iconX'
