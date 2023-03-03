@@ -8,9 +8,8 @@ class Attachment < ApplicationRecord
   serialize :dimensions, Array
 
   def update_media(url:)
-    self.media = open(url,
-                      http_basic_authentication: [ENV['TWILIO_ACCOUNT_SID'],
-                                                  ENV['TWILIO_AUTH_TOKEN']])
+    self.media = open(url, http_basic_authentication: [
+      Rails.configuration.x.twilio.account_sid, Rails.configuration.x.twilio.auth_token])
   end
 
   def image?

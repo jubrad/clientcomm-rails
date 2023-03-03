@@ -1,10 +1,19 @@
 require 'rails_helper'
 
 describe ScheduledMessageCronJob, active_job: true, type: :job do
+
+  before do
+    stub_request(:post, "https://monitoring.us-east-1.amazonaws.com/").
+        to_return(status: 200, body: "", headers: {})
+  end
+
+
   let!(:sent_message) { create :text_message, inbound: false, sent: true, send_at: Time.zone.now }
   let!(:future_message) { create :text_message, inbound: false, sent: false, send_at: Time.zone.now + 20.minutes }
   let!(:inbound_message) { create :text_message, inbound: true, send_at: Time.zone.now }
   let!(:send_message) { create :text_message, inbound: false, sent: false, send_at: Time.zone.now }
+
+
   subject do
     ScheduledMessageCronJob.perform_now
   end

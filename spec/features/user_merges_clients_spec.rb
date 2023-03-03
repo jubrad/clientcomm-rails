@@ -125,8 +125,12 @@ feature 'User merges clients', :js do
         expect(page).to have_content client_from.full_name
         expect(page).to have_css '.message--content', text: message_body_from
         expect(page).to have_css '.message--content', text: message_body_to
-        expect(page).to have_content "\"#{client_from.full_name} #{phone_number_from_display}\" conversation ends"
-        expect(page).to have_content "\"#{client_from.full_name} #{phone_number_from_display}\" merged with \"#{client_to.full_name} #{phone_number_to_display}\""
+        
+        # TODO : wait - figure out why we need a wait here
+        wait_for("End conversation to appear", timeout: 10) {page.all(".message--event").count == 2}
+        
+        expect(page).to have_ignoring_newlines "\"#{client_from.full_name} #{phone_number_from_display}\" conversation ends"
+        expect(page).to have_ignoring_newlines "\"#{client_from.full_name} #{phone_number_from_display}\" merged with \"#{client_to.full_name} #{phone_number_to_display}\""
         expect(page).to have_css '.flash__message', text: I18n.t('flash.notices.merge')
       end
 

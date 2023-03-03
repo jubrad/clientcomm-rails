@@ -4,7 +4,7 @@ describe 'Reporting Relationship Requests', type: :request, active_job: true do
   let(:department) { create :department }
   let(:user) { create :user, department: department }
   let(:transfer_user) { create :user, department: department }
-  let(:transfer_note) { Faker::Lorem.characters(10) }
+  let(:transfer_note) { Faker::Lorem.characters[0...10] }
   let!(:client) { create :client, user: user }
   let(:rr) { ReportingRelationship.find_by(user: user, client: client) }
   let!(:scheduled_messages) { create_list :text_message, 5, reporting_relationship: rr, send_at: Time.zone.now + 1.day }

@@ -24,6 +24,12 @@ module TwilioHelper
     end
   end
 
+  def twilio_rest_error(error_code, message="", resp_dict={})
+    # TODO decouple errors with name lookup to code
+    # https://assets.cdn.prod.twilio.com/documents/twilio-error-codes.json
+    Twilio::REST::RestError.new(message, Twilio::Response.new(error_code,resp_dict.to_json))
+  end
+
   def post_header_name
     'X-Twilio-Signature'
   end
@@ -120,7 +126,8 @@ module TwilioHelper
   end
 
   def correct_signature(tw_params = twilio_new_message_params, post_path = '')
-    Twilio::Security::RequestValidator.new(ENV['TWILIO_AUTH_TOKEN'])
-                                      .build_signature_for("#{myhost}#{post_path}", tw_params)
+    Twilio::Security::RequestValidator
+      .new(Rails.configuration.x.twilio.auth_token)
+      .build_signature_for("#{myhost}#{post_path}", tw_params)
   end
 end

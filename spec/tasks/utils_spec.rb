@@ -203,7 +203,7 @@ describe 'utils rake tasks' do
       before do
         expect(SMSService.instance).to receive(:message_lookup)
           .with(twilio_sid: message_sid)
-          .and_raise(Twilio::REST::RestError.new('Unable to fetch record', 20404, 404))
+          .and_raise(twilio_rest_error(20404, "Unable to fetch record"))
       end
 
       it 'responds with an error' do

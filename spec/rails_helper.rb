@@ -8,9 +8,16 @@ require 'rspec/rails'
 require 'webmock/rspec'
 require 'capybara/rails'
 require 'capybara/rspec'
-require 'capybara/poltergeist'
-require 'action_cable/testing/rspec'
-require 'action_cable/testing/rspec/features'
+require 'rspec/rails/shared_contexts/action_cable'
+
+RSpec::Rails::FeatureCheck.module_eval do
+  module_function
+
+  def has_action_cable_testing?
+    true
+  end
+end
+
 
 Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 
@@ -23,14 +30,17 @@ ActiveJob::Base.queue_adapter = :test
 Capybara.server = :puma
 Capybara.default_max_wait_time = 5
 
+
 def headless_options
   browser_options = ::Selenium::WebDriver::Chrome::Options.new
-  browser_options.args << '--headless'
+  browser_options.args << '--headless' unless ENV['RSPEC_HEADED']
   browser_options.args << '--disable-gpu' if Gem.win_platform?
   browser_options
 end
 
-Capybara.register_driver :headless_chrome do |app|
+driver = ENV['RSPEC_HEADED'] ? :chorme : :headless_chrome
+
+ Capybara.register_driver driver do |app|
   browser_options = headless_options
   Capybara::Selenium::Driver.new(app, browser: :chrome, options: browser_options)
 end
@@ -38,13 +48,33 @@ Capybara.register_driver :chrome do |app|
   Capybara::Selenium::Driver.new(app, browser: :chrome)
 end
 
-Capybara.javascript_driver = :headless_chrome
+Capybara.javascript_driver = driver
 
 # change to ':accessible_poltergeist' for accessibility warnings
 # NOTE: you'll need to include the capybara-accessible gem
 # Capybara.javascript_driver = :poltergeist
 
 WebMock.disable_net_connect!(allow_localhost: true)
+
+RSpec::Matchers.define :have_ignoring_newlines do |string|
+  match do |page|
+    case string
+    when String
+      return page.text.tr("\n"," ").include? string
+    when Regexp
+      return string.match page.text.tr("\n"," ")
+    end
+  end
+
+  failure_message do |actual|
+    "expected to find #{string.inspect} in:\n#{actual.text}"
+  end
+
+  failure_message_when_negated do |actual|
+    "expected not to find #{string.inspect} in:\n#{actual.text}"
+  end
+end
+
 
 RSpec.configure do |config|
   config.fixture_path = ::Rails.root.join('spec', 'fixtures')

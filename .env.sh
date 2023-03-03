@@ -1,0 +1,9 @@
+export DEPLOYMENT=my-deployment
+export DEPLOY_BASE_URL=https://clientcomm.example.com
+export HELP_LINK=https://codeforamerica.github.io/clientcommfaq/
+export MIXPANEL_TOKEN=12345
+export PORT=3000
+export TIME_ZONE="Pacific Time (US & Canada)"
+export TWILIO_ACCOUNT_SID="some_sid"
+export TWILIO_AUTH_TOKEN="some_token"
+export TWILIO_PHONE_NUMBER="1234567890"

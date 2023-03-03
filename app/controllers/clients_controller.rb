@@ -32,18 +32,17 @@ class ClientsController < ApplicationController
         label: 'client_create_success',
         data: @client.reload.analytics_tracker_data
       )
-
       rr = current_user.reporting_relationships.find_by(client: @client)
-
-      if current_user.treatment_group == 'baltimore-welcome-message'
-        redirect_to new_reporting_relationship_welcome_path rr
-      else
-        redirect_to reporting_relationship_path rr
-      end
+      redirect_to reporting_relationship_path rr
     else
+      
       @existing_client = Client.find_by(phone_number: @client.phone_number)
-      @conflicting_user = @existing_client&.users&.active_rr&.where&.not(id: current_user.id)
-                                          &.find_by(department: current_user.department)
+
+      @conflicting_user = @existing_client
+        &.users&.active_rr
+        &.where&.not(id: current_user.id)
+        &.find_by(department: current_user.department)
+      
 
       catch(:handled) do
         handle_new_relationship_with_existing_client
@@ -79,7 +78,7 @@ class ClientsController < ApplicationController
         handle_deactivated_client
       end
       return
-    elsif @client.errors.added?(:phone_number, :taken)
+    elsif @client.errors.of_kind?(:phone_number, :taken)
       @existing_client = Client.find_by(phone_number: @client.phone_number)
       error_text = phone_number_conflict_error_text
 
@@ -168,7 +167,7 @@ class ClientsController < ApplicationController
   end
 
   def handle_errors_other_than_phone_number_taken
-    return if @client.errors.added?(:phone_number, :taken)
+    return if @client.errors.of_kind?(:phone_number, :taken)
 
     track_errors('create')
     flash.now[:alert] = t('flash.errors.client.invalid')
@@ -177,7 +176,7 @@ class ClientsController < ApplicationController
   end
 
   def handle_conflicting_user
-    return unless @client.errors.added?(:phone_number, :taken)
+    return unless @client.errors.of_kind?(:phone_number, :taken)
     return unless @conflicting_user
 
     @client.errors.delete(:phone_number)
@@ -195,7 +194,7 @@ class ClientsController < ApplicationController
   end
 
   def handle_existing_relationship
-    return unless @client.errors.added?(:phone_number, :taken)
+    return unless @client.errors.of_kind?(:phone_number, :taken)
     return if @conflicting_user
 
     existing_relationship = current_user.reporting_relationships.find_by(client: @existing_client)
@@ -208,7 +207,7 @@ class ClientsController < ApplicationController
   end
 
   def handle_new_relationship_with_existing_client
-    return unless @client.errors.added?(:phone_number, :taken)
+    return unless @client.errors.of_kind?(:phone_number, :taken)
     return if @conflicting_user
     return if current_user.clients.include?(@existing_client)
 

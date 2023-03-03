@@ -74,7 +74,7 @@ feature 'Client status banner', active_job: true do
     step 'click on button and go to mass message page' do
       click_on 'Message them'
 
-      expect(page).to have_current_path(new_mass_message_path, only_path: true)
+      expect(page).to have_current_path(new_mass_message_path, ignore_query: true)
 
       recent_clients.each do |client|
         rr = ReportingRelationship.find_by(client: client, user: user)

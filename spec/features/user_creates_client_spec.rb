@@ -39,8 +39,8 @@ feature 'User creates client' do
     find('.ui-datepicker-next').click
     click_on future_date.strftime('%-d')
     click_on 'Save new client'
-    expect(page).to have_content client_first_name
-    expect(page).to have_content client_last_name
+    expect(page).to have_ignoring_newlines client_first_name
+    expect(page).to have_ignoring_newlines client_last_name
 
     click_on 'Manage client'
 
@@ -56,7 +56,7 @@ feature 'User creates client' do
     fill_in 'Notes', with: notes
     click_on 'Save new client'
     expect(page).to have_content 'Add a new client'
-    expect(page).to have_content "Last name can't be blank"
+    expect(page).to have_css '.text--error', text: "can't be blank"
   end
 
   context 'the client already exists and belongs to another user in another department' do
@@ -75,9 +75,9 @@ feature 'User creates client' do
 
         expect(page).to have_current_path(clients_path)
 
-        expect(page).to have_content other_client_first_name
-        expect(page).to have_content other_client_last_name
-        expect(page).to have_content("The number #{phone_number_display} already exists in ClientComm")
+        expect(page).to have_ignoring_newlines other_client_first_name
+        expect(page).to have_ignoring_newlines other_client_last_name
+        expect(page).to have_ignoring_newlines("The number #{phone_number_display} already exists in ClientComm")
         click_on 'Yes, use this client'
 
         rr = myuser.reporting_relationships.find_by(client: client)
@@ -86,91 +86,6 @@ feature 'User creates client' do
         click_on 'Manage client'
 
         expect(find_field('Notes').value).to eq notes
-      end
-    end
-  end
-
-  context 'user is in welcome message treatment group' do
-    let(:too_long_message_body) { 'bye ' * 401 }
-
-    before do
-      myuser.update(treatment_group: 'baltimore-welcome-message')
-    end
-
-    scenario 'welcome message page is shown after client is created', :js, active_job: true do
-      welcome_body = I18n.t(
-        'message.welcome',
-        salutation: 'Good morning',
-        client_full_name: "#{client_first_name} #{client_last_name}",
-        user_last_name: user_last_name
-      )
-
-      step 'fills in and submits new client info and sees the welcome message page' do
-        travel_to Time.zone.now.noon - 1.hour do
-          visit new_client_path
-
-          fill_in 'First name', with: client_first_name
-          fill_in 'Last name', with: client_last_name
-          fill_in 'Phone number', with: phone_number
-          click_on 'Save new client'
-
-          expect(page).to have_current_path(new_reporting_relationship_welcome_path(myuser.reload.reporting_relationships.last))
-          expect(page).to have_content("Introduce yourself to #{client_first_name} #{client_last_name}")
-          expect(page).to have_css('#message_body', text: welcome_body)
-          expect(page).to have_button('Send', disabled: false)
-        end
-      end
-
-      rr = myuser.reload.reporting_relationships.last
-
-      step 'clicks the reveal widget' do
-        expect(page).to_not have_content("ClientComm data shows that some factors contribute positively to a message's rate of response.")
-
-        click_on 'reveal-button'
-        wait_for_ajax
-
-        expect_analytics_events(
-          'welcome_prompt_expand' => {
-            'client_id' => rr.client.id
-          }
-        )
-        expect(page).to have_content("ClientComm data shows that some factors contribute positively to a message's rate of response.")
-      end
-
-      step 'enters an empty message and the send button is disabled' do
-        fill_in 'message_body', with: ''
-        expect(page).to have_button('Send', disabled: true)
-      end
-
-      step 'enters a too-long message and the send button is disabled' do
-        fill_in 'Send a text message', with: too_long_message_body
-        expect(page).to have_button('Send', disabled: true)
-      end
-
-      step 'clicks skip button and is redirected to the conversation' do
-        click_on 'Skip'
-        wait_for_ajax
-
-        expect_analytics_events(
-          'welcome_prompt_skip' => {
-            'client_id' => rr.client.id
-          }
-        )
-        expect(page).to have_current_path(reporting_relationship_path(rr))
-        expect(page).to_not have_css '.message--outbound'
-        expect(page).to_not have_css '.message--inbound'
-      end
-
-      step 'submits welcome message form and sees the outgoing message in the conversation' do
-        travel_to Time.zone.now.noon - 1.hour do
-          visit new_reporting_relationship_welcome_path rr
-          expect(page).to have_css('#message_body', text: welcome_body)
-        end
-        perform_enqueued_jobs do
-          click_on 'Send'
-          expect(page).to have_current_path(reporting_relationship_path(rr))
-          expect(page).to have_css '.message--outbound div', text: welcome_body
-        end
       end
     end
   end

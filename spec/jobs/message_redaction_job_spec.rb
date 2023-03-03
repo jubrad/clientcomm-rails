@@ -14,7 +14,7 @@ describe MessageRedactionJob, active_job: true, type: :job do
   end
 
   context 'twilio returns a 404' do
-    let(:error) { Twilio::REST::RestError.new('Not Found', 20404, 404) }
+    let(:error) { twilio_rest_error(20404, "Not Found") }
 
     it 'retries the job' do
       expect(SMSService.instance).to receive(:redact_message).exactly(4).times.with(message: message).and_raise(error)
@@ -25,7 +25,7 @@ describe MessageRedactionJob, active_job: true, type: :job do
   end
 
   context 'the message is not in a final state' do
-    let(:error) { Twilio::REST::RestError.new('Not Complete', 20009, 400) }
+    let(:error) { twilio_rest_error(20009, "Bad Request") }
 
     it 'retries the job' do
       expect(SMSService.instance).to receive(:redact_message).exactly(4).times.with(message: message).and_raise(error)

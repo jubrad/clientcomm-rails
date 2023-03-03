@@ -4,7 +4,8 @@ module Messages
     skip_after_action :intercom_rails_auto_include
 
     def create
-      message = current_user.messages.update(params[:message_id], read: message_params[:read])
+      message = current_user.messages.find(params[:message_id])
+      message.update!(read: message_params[:read])
       if message.reporting_relationship.messages.unread.empty?
         message.reporting_relationship.update!(has_unread_messages: false)
         user = message.reporting_relationship.user

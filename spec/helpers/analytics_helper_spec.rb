@@ -55,12 +55,12 @@ RSpec.describe AnalyticsHelper, type: :helper do
       let(:admin_user) { create :user, admin: true }
 
       before do
-        @deploy_base_url = ENV['DEPLOY_BASE_URL']
-        ENV['DEPLOY_BASE_URL'] = 'https://test.example.com'
+        @deploy_base_url = Rails.configuration.x.deploy_base_url
+        Rails.configuration.x.deploy_base_url = 'https://test.example.com'
       end
 
       after do
-        ENV['DEPLOY_BASE_URL'] = @deploy_base_url
+        Rails.configuration.x.deploy_base_url = @deploy_base_url
       end
 
       it 'sets distinct id to admin id' do

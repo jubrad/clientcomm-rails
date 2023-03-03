@@ -106,11 +106,7 @@ feature 'sending messages', active_job: true do
       fill_in 'Phone number', with: new_phone_number
       click_on 'Save changes'
       expect(page).to have_current_path(reporting_relationship_path(rr))
-      expect(page).to have_css '.message--event', text:
-        I18n.t(
-          'messages.phone_number_edited_by_you',
-          new_phone_number: new_phone_number_display
-        )
+      expect(page.find('.message--event')).to have_ignoring_newlines I18n.t('messages.phone_number_edited_by_you', new_phone_number: new_phone_number_display)
       expect(page).to have_css('like-options', visible: :hidden)
     end
 

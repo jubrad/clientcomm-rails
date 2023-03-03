@@ -29,7 +29,7 @@ feature 'Twilio' do
         login_as user, scope: :user
         rr = user.reporting_relationships.find_by(client: client)
         visit reporting_relationship_path(rr)
-        expect(page).to have_content message_body
+        expect(page).to have_ignoring_newlines message_body
       end
 
       it 'allows blank messages' do

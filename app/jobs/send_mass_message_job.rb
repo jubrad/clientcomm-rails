@@ -44,7 +44,7 @@ class SendMassMessageJob < ApplicationJob
   end
 
   def deploy_prefix
-    URI.parse(ENV['DEPLOY_BASE_URL']).hostname.split('.')[0..1].join('_')
+    URI.parse(Rails.configuration.x.deploy_base_url).hostname.split('.')[0..1].join('_')
   end
 
   def distinct_id(user_id)

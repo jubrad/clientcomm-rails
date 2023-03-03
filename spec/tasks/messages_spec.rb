@@ -79,7 +79,7 @@ describe 'messages rake tasks' do
         .and_return(true)
       expect(SMSService.instance).to receive(:status_lookup)
         .with(message: broken_message.reload)
-        .and_raise(Twilio::REST::RestError.new('Unable to fetch record', 20404, 404))
+        .and_raise(twilio_rest_error(20404, 'Unable to fetch record'))
 
       expect(transient_messages.count).to eq 5
       expect(undelivered_messages.count).to eq 1

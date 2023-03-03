@@ -2,6 +2,7 @@ class Department < ApplicationRecord
   has_many :users, dependent: :nullify
   has_many :reports, dependent: :destroy
   has_many :client_statuses, dependent: :destroy
+
   belongs_to :unclaimed_user, class_name: 'User', foreign_key: 'user_id', inverse_of: :department
 
   before_validation :normalize_phone_number, if: :phone_number_changed?

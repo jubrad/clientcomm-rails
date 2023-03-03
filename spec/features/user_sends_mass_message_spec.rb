@@ -95,9 +95,9 @@ feature 'sending mass messages', active_job: true do
 
     step 'user sorts clients' do
       find('th', text: 'Name').click
-      expect(page).to have_content(/#{client_1.full_name}.*#{client_2.full_name}.*#{client_3.full_name}/)
+      expect(page).to have_ignoring_newlines(/#{client_1.full_name}.*#{client_2.full_name}.*#{client_3.full_name}/)
       find('th', text: 'Name').click
-      expect(page).to have_content(/#{client_3.full_name}.*#{client_2.full_name}.*#{client_1.full_name}/)
+      expect(page).to have_ignoring_newlines(/#{client_3.full_name}.*#{client_2.full_name}.*#{client_1.full_name}/)
     end
 
     step 'user searches for clients' do
@@ -138,9 +138,9 @@ feature 'sending mass messages', active_job: true do
     end
 
     step 'user clicks the send later button, revealing the scheduling form' do
-      expect(page).to_not have_content I18n.t('views.mass_message.new.schedule_form.title')
+      expect(page).to_not have_ignoring_newlines I18n.t('views.mass_message.new.schedule_form.title')
       click_on 'Send later'
-      expect(page).to have_content I18n.t('views.mass_message.new.schedule_form.title')
+      expect(page).to have_ignoring_newlines I18n.t('views.mass_message.new.schedule_form.title')
     end
 
     step 'when user enters a message that is too long' do
@@ -160,8 +160,8 @@ feature 'sending mass messages', active_job: true do
       select past_date.change(min: 0).strftime('%-l:%M%P'), from: 'Time'
       click_on 'Schedule messages'
       expect(page).to have_current_path(mass_messages_path)
-      expect(page).to have_content I18n.t('views.mass_message.new.schedule_form.title')
-      expect(page).to have_content I18n.t('activerecord.errors.models.message.attributes.send_at.on_or_after')
+      expect(page).to have_ignoring_newlines I18n.t('views.mass_message.new.schedule_form.title')
+      expect(page).to have_ignoring_newlines I18n.t('activerecord.errors.models.message.attributes.send_at.on_or_after')
     end
 
     step 'user selects a date in the future and schedules the message' do

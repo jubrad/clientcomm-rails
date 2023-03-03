@@ -1,5 +1,5 @@
 FactoryBot.define do
   factory :highlight_blob do
-    text 'MyText'
+    text { 'MyText' }
   end
 end

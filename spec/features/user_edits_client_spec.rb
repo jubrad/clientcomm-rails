@@ -40,7 +40,7 @@ feature 'user edits client', :js do
       end
 
       expect(page).to have_current_path(edit_client_path(clientone))
-      expect(page).to have_content("also assigned to #{other_user.full_name}")
+      expect(page).to have_ignoring_newlines("also assigned to #{other_user.full_name}")
       expect(find_field('Phone number').value).to eq(phone_number_display)
     end
 
@@ -66,7 +66,7 @@ feature 'user edits client', :js do
       clientone.reload
       rr = my_user.reporting_relationships.find_by(client: clientone)
       expect(page).to have_current_path(reporting_relationship_path(rr))
-      expect(page).to have_content "#{new_first_name} #{new_last_name}"
+      expect(page).to have_ignoring_newlines "#{new_first_name} #{new_last_name}"
       expect(page).to have_content new_phone_number_display
       expect(page).to have_css '.message--event', text:
         I18n.t(
@@ -123,8 +123,8 @@ feature 'user edits client', :js do
       end
 
       expect(page).to have_current_path(edit_client_path(clientone))
-      expect(page).to have_content(unread_error_message)
-      expect(page).to have_content(unread_deactivate_error_message)
+      expect(page).to have_ignoring_newlines(unread_error_message)
+      expect(page).to have_ignoring_newlines(unread_deactivate_error_message)
     end
   end
 
@@ -141,8 +141,8 @@ feature 'user edits client', :js do
       end
 
       expect(page).to have_current_path(edit_client_path(clientone))
-      expect(page).to_not have_content(unread_error_message)
-      expect(page).to_not have_content(unread_deactivate_error_message)
+      expect(page).to_not have_ignoring_newlines(unread_error_message)
+      expect(page).to_not have_ignoring_newlines(unread_deactivate_error_message)
 
       twilio_post_sms(twilio_new_message_params(
                         from_number: clientone.phone_number,
@@ -150,7 +150,7 @@ feature 'user edits client', :js do
       ))
 
       wait_for_ajax
-      expect(page).to have_content(unread_error_message)
+      expect(page).to have_ignoring_newlines(unread_error_message)
 
       within '.unread-warning.deactivate' do
         find_link('click here', href: reporting_relationship_path(rr))
@@ -188,7 +188,7 @@ feature 'user edits client', :js do
 
         rr = my_user.reporting_relationships.find_by(client: clientone)
         expect(page).to have_current_path(reporting_relationship_path(rr))
-        expect(page).to_not have_content rr.notes.truncate(40, separator: ' ', omission: '...')
+        expect(page).to_not have_ignoring_newlines rr.notes.truncate(40, separator: ' ', omission: '...')
       end
     end
   end
@@ -204,8 +204,9 @@ feature 'user edits client', :js do
     step 'submits empty last name' do
       fill_in 'Last name', with: ''
       click_on 'Save changes'
+      
       expect(page).to have_content 'Edit client'
-      expect(page).to have_content "Last name can't be blank"
+      expect(page).to have_css '.text--error', text: "can't be blank"
     end
 
     step 'cancels the edit' do
@@ -224,7 +225,7 @@ feature 'user edits client', :js do
       find('input#client_next_court_date_at').send_keys(:escape)
       click_on 'Save changes'
       expect(page).to have_content 'Edit client'
-      expect(page).to have_content I18n.t('activerecord.errors.models.client.attributes.next_court_date_at.invalid')
+      expect(page).to have_ignoring_newlines I18n.t('activerecord.errors.models.client.attributes.next_court_date_at.invalid')
     end
   end
 end
