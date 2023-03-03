@@ -117,4 +117,9 @@ Rails.application.configure do
       ssekms_key_id: ENV['AWS_KMS_KEY_ID']
     }
   }
+
+  # twillio setup
+  config.x.twilio.auth_token = ENV.fetch('TWILIO_AUTH_TOKEN', "some_token")
+  config.x.twilio.account_sid = ENV.fetch('TWILIO_ACCOUNT_SID', "some_sid")
+  config.x.deploy_base_url= ENV.fetch('DEPLOY_BASE_URL', "https://test.example.com")
 end

@@ -25,7 +25,7 @@ default: &default
 development:
   <<: *default
   database: clientcomm_development
-  host: localhost
+  host: 127.0.0.1
   username: postgres
   port: 5432
 
@@ -61,7 +61,7 @@ development:
 test:
   <<: *default
   host: 127.0.0.01
-  database: clientcomm_test
+  database: <%= ENV.fetch("CLIENTCOMM_DATABASE", "clientcomm_test") %>
   password: clientcomm
   username: postgres
 

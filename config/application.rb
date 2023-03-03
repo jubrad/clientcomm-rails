@@ -30,6 +30,10 @@ module Clientcomm
     # see https://github.com/twilio/twilio-ruby/blob/master/lib/rack/twilio_webhook_authentication.rb
     config.middleware.use Rack::TwilioWebhookAuthentication, ENV['TWILIO_AUTH_TOKEN'], '/incoming'
 
+    # Use delayed job for the job queue
+    config.active_job.queue_adapter = :delayed_job
+
+
     # Configure external DSN
     if ENV['SENTRY_ENDPOINT']
       Raven.configure do |config|
